@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const logger = require('./src/libs/logger')
 const connectDB = require('./src/config/db');
 
 const app = express();
@@ -17,6 +18,6 @@ connectDB().then(() => {
   });
 
   app.listen(PORT, () => {
-    console.log(`💬 Talky-Chat Server running on port: ${PORT}`);
+    logger.info(`💬 Talky-Chat Server running on port: ${PORT}`);
   });
 });
