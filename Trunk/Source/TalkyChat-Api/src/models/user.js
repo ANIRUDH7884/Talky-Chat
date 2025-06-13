@@ -31,6 +31,10 @@ const userSchema = new mongoose.SchemaType(
             enum: ['online', 'offline'],
             default: "offline",
         },
+        phoneNumber: {
+            type: Number,
+            unique: true
+        }
     },
     { timestamp : true }
 );
