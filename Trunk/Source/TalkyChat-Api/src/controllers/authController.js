@@ -20,7 +20,7 @@ const CreateOtp = async (req, res) => {
   try {
     await Otp.deleteMany({ email });
 
-    await Otp.create({ email, otpCode, status: "new" });
+    await Otp.create({ email, otpCode });
 
     const htmlTemplate = getOtpEmailTemplate(otpCode, "User");
     await sendEmail(email, "Your OTP for Talky Chat", htmlTemplate);
@@ -38,53 +38,4 @@ const CreateOtp = async (req, res) => {
   }
 };
 
-//Verify Otp Endpoint
-const VerifyOtp = async (req, res) => {
-  const { email, otpCode } = req.body;
-
-  if (!email || !otpCode) {
-    return res.status(400).json({
-      status: "missing-fields",
-      message: "Email and OTP code are required",
-    });
-  }
-
-  try {
-
-    const otpRecord = await Otp.findOne({ email, status: "new" });
-
-    if (!otpRecord) {
-
-      return res.status(400).json({
-        status: "otp-not-found",
-        message: "OTP not found, expired, or already used",
-      });
-    }
-
-    logger.info(" OTP Record Found:", otpRecord);
-
-    if (otpRecord.otpCode !== Number(otpCode)) {
-
-      return res.status(400).json({
-        status: "otp-invalid",
-        message: "Incorrect OTP entered",
-      });
-    }
-
-    otpRecord.status = "verified";
-    await otpRecord.save();
-
-    return res.status(200).json({
-      status: "otp-verified",
-      message: "OTP verified successfully",
-    });
-  } catch (error) {
-    logger.error("OTP Verification Error:", error);
-    return res.status(500).json({
-      status: "server-error",
-      message: "Something went wrong while verifying OTP",
-    });
-  }
-};
-
-module.exports = { CreateOtp, VerifyOtp };
+module.exports = { CreateOtp };

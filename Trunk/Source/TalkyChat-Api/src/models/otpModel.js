@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const otpSchema = new mongoose.Schema({
   email: {
@@ -15,11 +15,6 @@ const otpSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
     expires: 300,
-  },
-  status: {
-    type: String,
-    enum: ["new", "verified", "used", "expired"],
-    default: "new",
   },
 });
 
