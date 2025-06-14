@@ -1,8 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const logger = require('./src/libs/logger')
+const logger = require('./src/libs/logger');
 const connectDB = require('./src/config/db');
+const authRoutes = require('./src/routes/authRoute');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,12 +12,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Connect to DB first, then start server
-connectDB().then(() => {
-  app.get('/', (req, res) => {
-    res.send("🚀 Talky-Chat Server is running!");
-  });
+// Routes
+app.use('/api/auth', authRoutes);
 
+// Connect DB and Start Server
+connectDB().then(() => {
   app.listen(PORT, () => {
     logger.info(`💬 Talky-Chat Server running on port: ${PORT}`);
   });
