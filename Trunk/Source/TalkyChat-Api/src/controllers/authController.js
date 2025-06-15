@@ -5,13 +5,9 @@ const getWelcomeEmailTemplate = require("../utils/successRegister");
 const getOtpEmailTemplate = require("../utils/otpTemplate");
 const { hashPassword } = require("../libs/hasher");
 const { sendEmail } = require("../services/Mailer");
-const {
-  validateEmail,
-  validatePassword,
-  validatePhoneNumber,
-  validateUsername,
-} = require("../libs/validator");
+const {validateEmail, validatePassword, validatePhoneNumber, validateUsername,} = require("../libs/validator");
 const { comparePasswords } = require("../libs/hasher");
+const { generateToken } = require('../services/jwtService');
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
 
@@ -217,10 +213,13 @@ const loginUser = async (req, res) => {
 
     user.status = "online";
     await user.save();
+
+    const Token = generateToken({UserId:user._id, Email:user.email, User:user.username})
     
     return res.status(200).json({
       status: "login-success",
       message: "Login successful",
+      Token,
       user: {
         _id: user._id,
         username: user.username,
