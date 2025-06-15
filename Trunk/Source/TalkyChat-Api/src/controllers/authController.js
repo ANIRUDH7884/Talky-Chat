@@ -1,11 +1,17 @@
 const Otp = require("../models/otpModel");
 const User = require("../models/userModel");
 const logger = require("../libs/logger");
-const { hashPassword } = require('../libs/hasher');
-const { sendEmail } = require("../services/Mailer");
-const getWelcomeEmailTemplate = require('../utils/successRegister');
+const getWelcomeEmailTemplate = require("../utils/successRegister");
 const getOtpEmailTemplate = require("../utils/otpTemplate");
-const {validateEmail, validatePassword, validatePhoneNumber, validateUsername} = require('../libs/validator');
+const { hashPassword } = require("../libs/hasher");
+const { sendEmail } = require("../services/Mailer");
+const {
+  validateEmail,
+  validatePassword,
+  validatePhoneNumber,
+  validateUsername,
+} = require("../libs/validator");
+const { comparePasswords } = require("../libs/hasher");
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
 
@@ -54,11 +60,9 @@ const VerifyOtp = async (req, res) => {
   }
 
   try {
-
     const otpRecord = await Otp.findOne({ email, status: "new" });
 
     if (!otpRecord) {
-
       return res.status(400).json({
         status: "otp-not-found",
         message: "OTP not found, expired, or already used",
@@ -68,7 +72,6 @@ const VerifyOtp = async (req, res) => {
     logger.info(" OTP Record Found:", otpRecord);
 
     if (otpRecord.otpCode !== Number(otpCode)) {
-
       return res.status(400).json({
         status: "otp-invalid",
         message: "Incorrect OTP entered",
@@ -105,7 +108,8 @@ const registerUser = async (req, res) => {
   if (!validateUsername(username)) {
     return res.status(400).json({
       status: "invalid-username",
-      message: "Username must be 3-20 characters long with letters, numbers or underscores only",
+      message:
+        "Username must be 3-20 characters long with letters, numbers or underscores only",
     });
   }
 
@@ -119,7 +123,8 @@ const registerUser = async (req, res) => {
   if (!validatePassword(password)) {
     return res.status(400).json({
       status: "weak-password",
-      message: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
+      message:
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
     });
   }
 
@@ -177,5 +182,61 @@ const registerUser = async (req, res) => {
   }
 };
 
+//Login End-Point
+const loginUser = async (req, res) => {
+  const { identifier, password } = req.body;
 
-module.exports = { CreateOtp, VerifyOtp, registerUser };
+  if (!identifier || !password) {
+    return res.status(400).json({
+      status: "missing-fields",
+      message: "Both identifier and password are required",
+    });
+  }
+
+  try {
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+
+    const user = await User.findOne(
+      isEmail ? { email: identifier } : { phoneNumber: identifier }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User not found with given email or phone",
+      });
+    }
+
+    const isMatch = await comparePasswords(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        status: "invalid-credentials",
+        message: "Incorrect password",
+      });
+    }
+
+    user.status = "online";
+    await user.save();
+    
+    return res.status(200).json({
+      status: "login-success",
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        profilePic: user.profilePic,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    logger.error("Login error:", error);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong during login",
+    });
+  }
+};
+
+module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser };
