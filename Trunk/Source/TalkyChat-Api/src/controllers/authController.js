@@ -5,6 +5,7 @@ const { hashPassword } = require('../libs/hasher');
 const { sendEmail } = require("../services/Mailer");
 const getWelcomeEmailTemplate = require('../utils/successRegister');
 const getOtpEmailTemplate = require("../utils/otpTemplate");
+const {validateEmail, validatePassword, validatePhoneNumber, validateUsername} = require('../libs/validator');
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
 
@@ -97,8 +98,35 @@ const registerUser = async (req, res) => {
   if (!username || !email || !password || !phoneNumber) {
     return res.status(400).json({
       status: "missing-fields",
-      message:
-        "All fields (username, email, password, phoneNumber) are required",
+      message: "All fields are required",
+    });
+  }
+
+  if (!validateUsername(username)) {
+    return res.status(400).json({
+      status: "invalid-username",
+      message: "Username must be 3-20 characters long with letters, numbers or underscores only",
+    });
+  }
+
+  if (!validateEmail(email)) {
+    return res.status(400).json({
+      status: "invalid-email",
+      message: "Invalid email format",
+    });
+  }
+
+  if (!validatePassword(password)) {
+    return res.status(400).json({
+      status: "weak-password",
+      message: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
+    });
+  }
+
+  if (!validatePhoneNumber(phoneNumber)) {
+    return res.status(400).json({
+      status: "invalid-phone",
+      message: "Phone number must be a valid 10-digit number starting with 6-9",
     });
   }
 
@@ -106,6 +134,7 @@ const registerUser = async (req, res) => {
     const existingUser = await User.findOne({
       $or: [{ email }, { phoneNumber }],
     });
+
     if (existingUser) {
       return res.status(400).json({
         status: "user-exists",
@@ -113,7 +142,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = await hashPassword(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     const newUser = await User.create({
       username,
