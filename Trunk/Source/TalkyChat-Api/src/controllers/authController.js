@@ -11,6 +11,7 @@ const { generateToken } = require('../services/jwtService');
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
 
+//Create Otp End-Point
 const CreateOtp = async (req, res) => {
   const { email } = req.body;
 
@@ -238,4 +239,45 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser };
+//Update Profile End-Point
+const updateProfile = async(req , res) =>{
+  const userId = req.auth.id;
+  const {username, status, profilePic} = req.body
+
+  if(!username && !status && !profilePic) {
+    return res.status(400).json({
+      status: 'missing-fields',
+      message: 'Provide at least one field to update',
+    })
+  }
+  
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          ...(username && {username}),
+          ...(status && {status}),
+          ...(profilePic && {profilePic}),
+        },
+      },
+      {new: true}
+    ).select('-password');
+
+    return res.status(200).json({
+      status: "profile-updated",
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+
+  } catch (error) {
+
+    logger.error("Profile update error:", error);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while updating the profile",
+    });
+  }
+};
+ 
+module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile };
