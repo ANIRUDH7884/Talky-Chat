@@ -7,7 +7,7 @@ const { hashPassword } = require("../libs/hasher");
 const { sendEmail } = require("../services/Mailer");
 const {validateEmail, validatePassword, validatePhoneNumber, validateUsername,} = require("../libs/validator");
 const { comparePasswords } = require("../libs/hasher");
-const { generateToken } = require('../services/jwtService');
+const { generateToken,generateRefreshToken } = require('../services/jwtService');
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
 
@@ -215,16 +215,23 @@ const loginUser = async (req, res) => {
     user.status = "online";
     await user.save();
 
-    const Token = generateToken({
-      UserId: user._id,
-      Email: user.email,
-      User: user.username,
+    const accessToken = generateToken({
+      id: user._id,
+      email: user.email,
+      username: user.username,
+    });
+
+    const refreshToken = generateRefreshToken({
+      id: user._id,
+      email: user.email,
+      username: user.username,
     });
 
     return res.status(200).json({
       status: "login-success",
       message: "Login successful",
-      Token,
+      accessToken,
+      refreshToken,
       user: {
         _id: user._id,
         username: user.username,
@@ -342,4 +349,36 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword };
+//refresh Token End Point
+const refreshAccessToken = (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      status: "unauthorized",
+      message: "Refresh token missing",
+    });
+  }
+
+  const decoded = jwtService.verifyRefreshToken(refreshToken);
+  if (!decoded) {
+    return res.status(403).json({
+      status: "invalid-token",
+      message: "Refresh token invalid or expired",
+    });
+  }
+
+  const newAccessToken = jwtService.generateAccessToken({
+    id: decoded.id,
+    email: decoded.email,
+    username: decoded.username,
+  });
+
+  return res.status(200).json({
+    status: "token-refreshed",
+    message: "Access token refreshed successfully",
+    accessToken: newAccessToken,
+  });
+};
+
+module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken };
