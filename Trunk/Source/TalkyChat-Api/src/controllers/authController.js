@@ -381,4 +381,36 @@ const refreshAccessToken = (req, res) => {
   });
 };
 
-module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken };
+//Logout End-point
+const logout = async(req, res) =>{
+const userId = req.auth.id;
+
+try {
+  const user = await User.findById(userId);
+
+  if(!user) {
+    return res.status(400).json({
+        status: "user-not-found",
+        message: "User not found",
+    });
+  }
+
+  user.status = "offline";
+  await user.save();
+
+    return res.status(200).json({
+      status: "logout-success",
+      message: "User logged out successfully",
+    });
+
+} catch (error) {
+
+    logger.error("Logout error:", error.message);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong during logout",
+    }); 
+}
+}
+
+module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken, logout };
