@@ -215,8 +215,12 @@ const loginUser = async (req, res) => {
     user.status = "online";
     await user.save();
 
-    const Token = generateToken({UserId:user._id, Email:user.email, User:user.username})
-    
+    const Token = generateToken({
+      UserId: user._id,
+      Email: user.email,
+      User: user.username,
+    });
+
     return res.status(200).json({
       status: "login-success",
       message: "Login successful",
@@ -240,44 +244,56 @@ const loginUser = async (req, res) => {
 };
 
 //Update Profile End-Point
-const updateProfile = async(req , res) =>{
+const updateProfile = async (req, res) => {
   const userId = req.auth.id;
-  const {username, status, profilePic} = req.body
+  const { username, status } = req.body;
+  const profilePic = req.file ? req.file.path : null;
 
-  if(!username && !status && !profilePic) {
+  if (!username && !status && !profilePic) {
     return res.status(400).json({
-      status: 'missing-fields',
-      message: 'Provide at least one field to update',
-    })
+      status: "missing-fields",
+      message: "Provide at least one field to update",
+    });
   }
-  
+
   try {
+    logger.info(`Updating profile for user: ${userId}`);
+    if (req.file) {
+      logger.info("Profile picture uploaded to Cloudinary:", req.file.path);
+    }
+
+    const updateData = {
+      ...(username && { username }),
+      ...(status && { status }),
+      ...(profilePic && { profilePic }),
+    };
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      {
-        $set: {
-          ...(username && {username}),
-          ...(status && {status}),
-          ...(profilePic && {profilePic}),
-        },
-      },
-      {new: true}
-    ).select('-password');
+      { $set: updateData },
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User not found",
+      });
+    }
 
     return res.status(200).json({
       status: "profile-updated",
       message: "Profile updated successfully",
       user: updatedUser,
     });
-
   } catch (error) {
-
-    logger.error("Profile update error:", error);
+    logger.error("Profile update error:", JSON.stringify(error, null, 2));
     return res.status(500).json({
       status: "server-error",
       message: "Something went wrong while updating the profile",
+      error: error?.message || "Unknown error",
     });
   }
 };
- 
+
 module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile };
