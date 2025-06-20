@@ -296,4 +296,50 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile };
+//change Password End-point
+const changePassword = async (req, res) => {
+  const userId = req.auth.id;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({
+      status: "missing-fields",
+      message: "Both current and new passwords are required",
+    });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User not found",
+      });
+    }
+
+    const isMatch = await comparePasswords(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        status: "invalid-password",
+        message: "Current password is incorrect",
+      });
+    }
+
+    const hashedNewPassword = await hashPassword(newPassword);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res.status(200).json({
+      status: "password-updated",
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    logger.error("Change password error:", error.message);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while changing the password",
+    });
+  }
+};
+
+module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword };
