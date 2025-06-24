@@ -382,7 +382,7 @@ const refreshAccessToken = (req, res) => {
 };
 
 //Logout End-point
-const logout = async(req, res) =>{
+const logout = async(req, res) => {
 const userId = req.auth.id;
 
 try {
@@ -411,6 +411,6 @@ try {
       message: "Something went wrong during logout",
     }); 
 }
-}
+};
 
 module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken, logout };
