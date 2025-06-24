@@ -6,35 +6,27 @@ const verifyToken = (req, res, next) => {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({
       status: "unauthorized",
-      message: "Access token missing or invalid",
+      message: "Access token missing or malformed",
     });
   }
 
   const token = authHeader.split(" ")[1];
+  const decoded = jwtService.verifyToken(token);
 
-  try {
-    const decoded = jwtService.verifyToken(token);
-
-    if (!decoded) {
-      return res.status(403).json({
-        status: "forbidden",
-        message: "Invalid token",
-      });
-    }
-
-    req.auth = {
-      id: decoded.id,
-      email: decoded.email,
-      username: decoded.username,
-    };
-
-    next();
-  } catch (error) {
+  if (!decoded || !decoded.id) {
     return res.status(403).json({
       status: "forbidden",
       message: "Invalid or expired token",
     });
   }
+
+  req.auth = {
+    id: decoded.id,
+    email: decoded.email,
+    username: decoded.username,
+  };
+
+  next();
 };
 
 module.exports = verifyToken;
