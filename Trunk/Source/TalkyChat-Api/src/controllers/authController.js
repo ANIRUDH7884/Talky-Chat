@@ -413,4 +413,62 @@ try {
 }
 };
 
-module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken, logout };
+//My Profile End-point
+const getMyProfile = async (req, res) => {
+  const userId = req.auth.id;
+
+  try {
+    const user = await User.findById(userId).select("-password -__v");
+
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Profile fetched successfully",
+      user,
+    });
+
+  } catch (error) {
+    logger.error("Get my profile error:", error.message);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while fetching profile",
+    });
+  }
+};
+
+//Delete Endpoint
+const deleteAccount = async (req, res) => {
+  const userId = req.auth.id;
+
+  try {
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User not found or already deleted",
+      });
+    }
+
+    return res.status(200).json({
+      status: "account-deleted",
+      message: "Account deleted successfully",
+    });
+
+  } catch (error) {
+    logger.error("Delete account error:", error.message);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while deleting the account",
+    });
+  }
+};
+
+
+module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken, getMyProfile, logout, deleteAccount };
