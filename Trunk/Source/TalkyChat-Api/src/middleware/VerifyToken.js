@@ -11,22 +11,31 @@ const verifyToken = (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  const decoded = jwtService.verifyToken(token);
 
-  if (!decoded || !decoded.id) {
+  try {
+    const decoded = jwtService.verifyToken(token);
+
+    if (!decoded || !decoded.id) {
+      return res.status(403).json({
+        status: "forbidden",
+        message: "Invalid or expired token",
+      });
+    }
+
+    req.auth = {
+      id: decoded.id,
+      email: decoded.email,
+      username: decoded.username,
+    };
+
+    next();
+  } catch (error) {
     return res.status(403).json({
       status: "forbidden",
-      message: "Invalid or expired token",
+      message: "Token verification failed",
+      error: error.message,
     });
   }
-
-  req.auth = {
-    id: decoded.id,
-    email: decoded.email,
-    username: decoded.username,
-  };
-
-  next();
 };
 
 module.exports = verifyToken;

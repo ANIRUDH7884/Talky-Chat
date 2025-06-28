@@ -7,7 +7,7 @@ const connectDB = require('./src/config/db');
 const authRoutes = require('./src/routes/authRoute');
 const userRoutes = require('./src/routes/userRoute');
 const messageRoutes = require('./src/routes/messageRoute');
-
+const chatRoutes = require('./src/routes/chatRoute')
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -19,6 +19,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/message', messageRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Connect DB and Start Server
 connectDB().then(() => {
