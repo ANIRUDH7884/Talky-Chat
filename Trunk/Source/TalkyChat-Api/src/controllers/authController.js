@@ -5,9 +5,17 @@ const getWelcomeEmailTemplate = require("../utils/successRegister");
 const getOtpEmailTemplate = require("../utils/otpTemplate");
 const { hashPassword } = require("../libs/hasher");
 const { sendEmail } = require("../services/Mailer");
-const {validateEmail, validatePassword, validatePhoneNumber, validateUsername,} = require("../libs/validator");
+const {
+  validateEmail,
+  validatePassword,
+  validatePhoneNumber,
+  validateUsername,
+} = require("../libs/validator");
 const { comparePasswords } = require("../libs/hasher");
-const { generateToken,generateRefreshToken } = require('../services/jwtService');
+const {
+  generateToken,
+  generateRefreshToken,
+} = require("../services/jwtService");
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
 
@@ -144,6 +152,15 @@ const registerUser = async (req, res) => {
       });
     }
 
+    const otpRecord = await Otp.findOne({ email, status: "verified" });
+
+    if (!otpRecord) {
+      return res.status(400).json({
+        status: "otp-not-verified",
+        message: "Please verify your email OTP before registering",
+      });
+    }
+
     const hashedPassword = await hashPassword(password);
 
     const newUser = await User.create({
@@ -155,6 +172,11 @@ const registerUser = async (req, res) => {
 
     const welcomeHtml = getWelcomeEmailTemplate(newUser.username);
     await sendEmail(newUser.email, "👋 Welcome to Talky Chat!", welcomeHtml);
+
+    otpRecord.status = "used";
+    await otpRecord.save();
+
+    await Otp.deleteMany({ email });
 
     logger.info(`User registered: ${newUser.email}`);
 
@@ -382,35 +404,33 @@ const refreshAccessToken = (req, res) => {
 };
 
 //Logout End-point
-const logout = async(req, res) => {
-const userId = req.auth.id;
+const logout = async (req, res) => {
+  const userId = req.auth.id;
 
-try {
-  const user = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
 
-  if(!user) {
-    return res.status(400).json({
+    if (!user) {
+      return res.status(400).json({
         status: "user-not-found",
         message: "User not found",
-    });
-  }
+      });
+    }
 
-  user.status = "offline";
-  await user.save();
+    user.status = "offline";
+    await user.save();
 
     return res.status(200).json({
       status: "logout-success",
       message: "User logged out successfully",
     });
-
-} catch (error) {
-
+  } catch (error) {
     logger.error("Logout error:", error.message);
     return res.status(500).json({
       status: "server-error",
       message: "Something went wrong during logout",
-    }); 
-}
+    });
+  }
 };
 
 //My Profile End-point
@@ -432,7 +452,6 @@ const getMyProfile = async (req, res) => {
       message: "Profile fetched successfully",
       user,
     });
-
   } catch (error) {
     logger.error("Get my profile error:", error.message);
     return res.status(500).json({
@@ -460,7 +479,6 @@ const deleteAccount = async (req, res) => {
       status: "account-deleted",
       message: "Account deleted successfully",
     });
-
   } catch (error) {
     logger.error("Delete account error:", error.message);
     return res.status(500).json({
@@ -470,5 +488,15 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-
-module.exports = { CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, refreshAccessToken, getMyProfile, logout, deleteAccount };
+module.exports = {
+  CreateOtp,
+  VerifyOtp,
+  registerUser,
+  loginUser,
+  updateProfile,
+  changePassword,
+  refreshAccessToken,
+  getMyProfile,
+  logout,
+  deleteAccount,
+};

@@ -1,25 +1,34 @@
 const getOtpEmailTemplate = (otpCode, username = "User") => `
-  <div style="max-width: 500px; margin: auto; padding: 20px; border-radius: 10px; font-family: Arial, sans-serif; background: #f9f9f9; color: #333;">
-    <div style="text-align: center;">
-      <h2 style="color: #4CAF50;">🔐 OTP Verification</h2>
+  <div style="max-width: 600px; margin: auto; padding: 25px; border-radius: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to right, #fdfdfd, #f4f4f4); color: #333; border: 1px solid #e0e0e0;">
+    
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h2 style="color: #4CAF50; font-size: 28px;">🔐 Verify Your Email</h2>
+      <p style="font-size: 15px; color: #666;">Secure your Talky Chat experience</p>
     </div>
-    <p>Hi <strong>${username}</strong>,</p>
-    <p>You requested an OTP for verifying your email on <strong>Talky Chat</strong>.</p>
 
-    <div style="background: #ffffff; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: center;">
-      <p style="font-size: 18px; margin-bottom: 10px;">Your One Time Password (OTP) is:</p>
-      <div style="font-size: 32px; font-weight: bold; color: #4CAF50; letter-spacing: 5px;">
+    <p style="font-size: 16px;">Hey <strong>${username}</strong>,</p>
+
+    <p style="font-size: 15px; line-height: 1.6;">
+      We're excited to have you at <strong>Talky Chat</strong>! Use the OTP below to verify your email and get started with private messaging, amazing UI, and real-time chats.
+    </p>
+
+    <div style="background: #ffffff; padding: 25px; margin: 30px 0; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); text-align: center;">
+      <p style="font-size: 18px; margin-bottom: 12px; color: #555;">Your One-Time Password (OTP) is:</p>
+      <div style="font-size: 36px; font-weight: bold; color: #4CAF50; letter-spacing: 8px;">
         ${otpCode}
       </div>
+      <p style="font-size: 13px; margin-top: 15px; color: #999;">This OTP is valid for <strong>5 minutes</strong>.</p>
     </div>
 
-    <p>This OTP is valid for <strong>5 minutes</strong>.</p>
-    <p style="margin-top: 30px;">If you did not request this, you can safely ignore this email.</p>
-    
-    <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;" />
+    <p style="font-size: 14px; color: #555;">If you didn’t request this, please ignore this email. Your account is safe. 👍</p>
 
-    <p style="font-size: 12px; color: #777; text-align: center;">
-      &copy; ${new Date().getFullYear()} Talky Chat. All rights reserved.
+    <p style="margin-top: 40px;">Cheers,<br><strong>🚀 Talky Chat Team</strong></p>
+
+    <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;" />
+
+    <p style="font-size: 12px; color: #888; text-align: center;">
+      &copy; ${new Date().getFullYear()} Talky Chat. All rights reserved.<br>
+      This is an automated message – please do not reply.
     </p>
   </div>
 `;
