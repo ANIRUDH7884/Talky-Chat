@@ -45,4 +45,35 @@ const sendMessage = async (req, res) => {
   }
 };
 
-module.exports = { sendMessage }
+//Get All Messages Endpoint 
+const getAllMessages = async (req, res) => {
+  const { chatId } = req.params;
+
+  if (!chatId) {
+    return res.status(400).json({
+      status: "bad-request",
+      message: "Chat ID is required",
+    });
+  }
+
+  try {
+    const messages = await Message.find({ chat: chatId })
+      .populate("sender", "username email profilePic")
+      .populate("seenBy", "username email profilePic")
+      .populate("chat");
+
+    return res.status(200).json({
+      status: "success",
+      message: "Messages fetched successfully",
+      messages,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "server-error",
+      message: "Failed to fetch messages",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { sendMessage, getAllMessages }

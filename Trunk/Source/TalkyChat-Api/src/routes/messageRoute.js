@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { sendMessage } = require('../controllers/messageController')
+const { sendMessage, getAllMessages } = require('../controllers/messageController')
 const verifyToken = require('../middleware/VerifyToken');
 
 router.post('/send', verifyToken, sendMessage);
+router.get('/:chatId', verifyToken, getAllMessages);
 
 module.exports = router;
