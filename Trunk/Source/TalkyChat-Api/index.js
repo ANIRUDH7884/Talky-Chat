@@ -7,7 +7,8 @@ const connectDB = require('./src/config/db');
 const authRoutes = require('./src/routes/authRoute');
 const userRoutes = require('./src/routes/userRoute');
 const messageRoutes = require('./src/routes/messageRoute');
-const chatRoutes = require('./src/routes/chatRoute')
+const chatRoutes = require('./src/routes/chatRoute');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 

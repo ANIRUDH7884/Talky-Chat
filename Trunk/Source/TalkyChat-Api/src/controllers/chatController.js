@@ -1,6 +1,7 @@
 const logger = require("../libs/logger");
 const Chat = require("../models/chatModel");
 
+//Access Chat Endpoint
 const accessChat = async (req, res) => {
   const { userId } = req.body;
   const currentUserId = req.auth?.id;
@@ -18,7 +19,7 @@ const accessChat = async (req, res) => {
       message: "Cannot create chat with yourself",
     });
   }
-  
+
   try {
     let existingChat = await Chat.findOne({
       participants: { $all: [currentUserId, userId], $size: 2 },
@@ -49,6 +50,7 @@ const accessChat = async (req, res) => {
       fullChat,
     });
   } catch (error) {
+    logger.error("Internal server error", error)
     return res.status(500).json({
       status: "INTERNAL SERVER ERROR",
       message: "Failed to access chat",
@@ -57,4 +59,36 @@ const accessChat = async (req, res) => {
   }
 };
 
-module.exports = { accessChat };
+//Get AllChat Endpoint
+const getAllChats = async (req, res) => {
+  const currentUserId = req.auth?.id;
+
+  try {
+    const chats = await Chat.find({
+      participants: { $in: [currentUserId] },
+    })
+      .populate("participants", "-password")
+      .populate({
+        path: "latestMessage",
+        populate: {
+          path: "sender",
+          select: "username email profilePic",
+        },
+      })
+      .sort({ updatedAt: -1 });
+
+    return res.status(200).json({
+      status: "success",
+      message: "All chats fetched successfully",
+      chats,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "server-error",
+      message: "Failed to fetch chats",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { accessChat, getAllChats };
