@@ -1,8 +1,10 @@
 const logger = require("../libs/logger");
-const Message = require("../models/messageModel");
-const chat = require("../models/messageModel");
+const { getIO } = require("../config/socket");
 
-//send Message End-Point
+const Message = require("../models/messageModel");
+const Chat = require("../models/chatModel");
+
+//Send Message End-Point
 const sendMessage = async (req, res) => {
   const { content, chatId } = req.body;
   const senderId = req.auth?.id;
@@ -27,9 +29,18 @@ const sendMessage = async (req, res) => {
       .populate("chat")
       .populate("seenBy", "username email profilePic");
 
-    await chat.findByIdAndUpdate(chatId, {
+    await Chat.findByIdAndUpdate(chatId, {
       latestMessage: fullMessage._id,
     });
+
+    const io = getIO();
+    if (fullMessage.chat?.participants) {
+      fullMessage.chat.participants.forEach((user) => {
+        if (user._id.toString() !== senderId) {
+          io.to(user._id.toString()).emit("message received", fullMessage);
+        }
+      });
+    }
 
     return res.status(201).json({
       status: "message-sent",
@@ -45,7 +56,7 @@ const sendMessage = async (req, res) => {
   }
 };
 
-//Get All Messages Endpoint 
+//get All Messages End-Point
 const getAllMessages = async (req, res) => {
   const { chatId } = req.params;
 
@@ -76,4 +87,4 @@ const getAllMessages = async (req, res) => {
   }
 };
 
-module.exports = { sendMessage, getAllMessages }
+module.exports = { sendMessage, getAllMessages };
