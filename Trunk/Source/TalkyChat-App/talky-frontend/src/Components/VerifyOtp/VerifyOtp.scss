@@ -1,0 +1,167 @@
+// VerifyOtp.scss
+.verify-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #000d1b, #141E30);
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  color: white;
+
+  .verify-card {
+    background: rgba(0, 13, 27, 0.7);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #00f2fe, #4facfe);
+        color: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(90deg, #00f2fe, #4facfe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: white;
+    }
+
+    .subtext {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 30px;
+      font-size: 0.95rem;
+    }
+
+    form {
+      .otp-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+
+        .otp-input {
+          width: 60px;
+          height: 60px;
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: 600;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #00f2fe;
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.2);
+          }
+        }
+      }
+
+      .error-message {
+        color: #ff6b6b;
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+      }
+
+      .verify-btn {
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(135deg, #00f2fe, #4facfe);
+        color: #000d1b;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .spinner {
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(0, 13, 27, 0.3);
+          border-radius: 50%;
+          border-top-color: #000d1b;
+          animation: spin 1s ease-in-out infinite;
+        }
+
+        .icon {
+          transition: transform 0.3s ease;
+        }
+
+        &:hover:not(:disabled) .icon {
+          transform: translateX(3px);
+        }
+      }
+    }
+
+    .footer-links {
+      margin-top: 25px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+
+      button {
+        background: none;
+        border: none;
+        color: #4facfe;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0 5px;
+        margin-left: 5px;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

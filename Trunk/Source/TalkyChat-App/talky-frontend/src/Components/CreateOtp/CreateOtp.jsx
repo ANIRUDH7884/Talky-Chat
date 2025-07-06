@@ -1,16 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiMail, FiArrowRight, FiCheck } from "react-icons/fi";
 import "./CreateOtp.scss";
 
-function CreateOtp() {
+function CreateOtp({ onOtpSent }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const navigate = useNavigate();
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -25,10 +23,12 @@ function CreateOtp() {
 
     try {
       const response = await axios.post("http://localhost:3000/api/auth/create-otp", { email });
-      
+
       if (response.data.status === "otp-sent") {
         setShowSuccess(true);
-        setTimeout(() => navigate("/verify-otp"), 2000);
+        setTimeout(() => {
+          onOtpSent(email); // ✅ This replaces navigate("/verify-otp")
+        }, 1500);
       } else {
         setError(response.data.message || "Failed to send OTP");
       }
@@ -88,11 +88,10 @@ function CreateOtp() {
 
         <div className="footer-links">
           <span>Already have an account?</span>
-          <button onClick={() => navigate("/login")}>Sign In</button>
+          <button onClick={() => window.location.href = "/login"}>Sign In</button>
         </div>
       </motion.div>
 
-      {/* Success Notification */}
       {showSuccess && (
         <motion.div 
           className="success-notification"
@@ -104,7 +103,7 @@ function CreateOtp() {
               <FiCheck size={24} />
             </div>
             <h3>Verification Sent!</h3>
-            <p>We've sent a 6-digit code to your email</p>
+            <p>We've sent a 4-digit code to your email</p>
           </div>
         </motion.div>
       )}
