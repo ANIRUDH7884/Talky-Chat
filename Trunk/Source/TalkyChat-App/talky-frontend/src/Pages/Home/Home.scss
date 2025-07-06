@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.landing-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000d1b;
+  font-family: 'Inter', sans-serif;
+  padding: 0 20px;
+
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    width: 100%;
+    gap: 60px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+      gap: 40px;
+    }
+  }
+
+  .text-section {
+    max-width: 500px;
+
+    .title {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      color: #b6bdc3;
+
+      .gradient-text {
+        background: linear-gradient(90deg, #4FACFE 0%, #00F2FE 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 2.2rem;
+      }
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #495057;
+      margin-bottom: 40px;
+      line-height: 1.6;
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+      }
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+
+      button {
+        padding: 14px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+      }
+
+      .primary-btn {
+        background: linear-gradient(90deg, #4FACFE 0%, #00F2FE 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+
+        &:hover {
+          box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+          transform: translateY(-1px);
+        }
+      }
+
+      .secondary-btn {
+        background: white;
+        color: #4FACFE;
+        border: 2px solid #4FACFE;
+
+        &:hover {
+          background: rgba(79, 172, 254, 0.05);
+        }
+      }
+
+      @media (max-width: 480px) {
+        flex-direction: column;
+      }
+    }
+  }
+
+  .animation-section {
+    width: 400px;
+    max-width: 100%;
+
+    @media (max-width: 768px) {
+      width: 300px;
+    }
+  }
+}
