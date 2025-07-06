@@ -1,16 +1,14 @@
 import { useState, useRef } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
 import "./VerifyOtp.scss";
 
-function VerifyOtp({ email }) {
+function VerifyOtp({ email, onVerified }) {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const navigate = useNavigate();
   const inputRefs = useRef([]);
 
   const handleOtpChange = (value, index) => {
@@ -20,7 +18,6 @@ function VerifyOtp({ email }) {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Move to next input
     if (value && index < 3 && inputRefs.current[index + 1]) {
       inputRefs.current[index + 1].focus();
     }
@@ -53,8 +50,8 @@ function VerifyOtp({ email }) {
       if (response.data.status === "otp-verified") {
         setIsVerified(true);
         setTimeout(() => {
-          navigate("/register-complete", { state: { email } });
-        }, 1500);
+          onVerified(); // ✅ Move to final step (RegisterComplete)
+        }, 1000);
       } else {
         setError(response.data.message || "OTP verification failed");
       }
