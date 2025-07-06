@@ -27,7 +27,7 @@ function CreateOtp({ onOtpSent }) {
       if (response.data.status === "otp-sent") {
         setShowSuccess(true);
         setTimeout(() => {
-          onOtpSent(email); // ✅ This replaces navigate("/verify-otp")
+          onOtpSent(email);
         }, 1500);
       } else {
         setError(response.data.message || "Failed to send OTP");
