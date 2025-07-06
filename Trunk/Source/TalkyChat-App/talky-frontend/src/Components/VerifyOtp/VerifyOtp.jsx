@@ -11,6 +11,9 @@ function VerifyOtp({ email, onVerified }) {
   const [isVerified, setIsVerified] = useState(false);
   const inputRefs = useRef([]);
 
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+const authURL = import.meta.env.VITE_API_AUTH_URL;
+
   const handleOtpChange = (value, index) => {
     if (isNaN(value)) return;
 
@@ -42,16 +45,14 @@ function VerifyOtp({ email, onVerified }) {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/Verify-Otp", {
+      const response = await axios.post(`${baseURL}${authURL}Verify-Otp`, {
         email,
         otpCode,
       });
 
       if (response.data.status === "otp-verified") {
         setIsVerified(true);
-        setTimeout(() => {
-          onVerified(); // ✅ Move to final step (RegisterComplete)
-        }, 1000);
+        onVerified();
       } else {
         setError(response.data.message || "OTP verification failed");
       }

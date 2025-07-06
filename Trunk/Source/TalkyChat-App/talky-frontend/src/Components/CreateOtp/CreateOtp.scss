@@ -220,3 +220,61 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+/* Blurred background effect */
+.talky-backdrop {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.talky-modal .modal-content {
+  border-radius: 16px;
+  border: none;
+  padding: 32px 24px;
+  background: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+}
+
+.talky-modal .modal-body {
+  padding: 0;
+}
+
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EFF6FF;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.modal-message {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.modal-btn {
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 500;
+  width: 100%;
+  max-width: 200px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.modal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}

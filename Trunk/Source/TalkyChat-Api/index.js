@@ -13,7 +13,7 @@ const messageRoutes = require("./src/routes/messageRoute");
 const chatRoutes = require("./src/routes/chatRoute");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Middlewares
 app.use(

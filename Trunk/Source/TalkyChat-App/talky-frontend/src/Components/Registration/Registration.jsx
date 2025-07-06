@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion , AnimatePresence } from "framer-motion";
 import {
   FiUser,
   FiPhone,
@@ -12,6 +12,9 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import "./Registration.scss";
+
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+const authURL = import.meta.env.VITE_API_AUTH_URL;
 
 const Registration = ({ email: emailProp }) => {
   const navigate = useNavigate();
@@ -108,7 +111,7 @@ const Registration = ({ email: emailProp }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/auth/Register", {
+      const response = await fetch(`${baseURL}${authURL}Register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, email }),
@@ -116,11 +119,11 @@ const Registration = ({ email: emailProp }) => {
       const data = await response.json();
       if (data.status === "register-success") {
         setIsSubmitted(true);
-        setTimeout(() => navigate("/login", { state: { user: data.user } }), 2000);
+        navigate("/login", { state: { user: data.user } });
       } else {
         setErrors({ api: data.message || "Registration failed" });
       }
-    } catch (error) {
+    } catch (err) {
       setErrors({ api: "Network error. Please try again." });
     } finally {
       setIsLoading(false);
