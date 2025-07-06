@@ -4,7 +4,7 @@ import VerifyOtp from "../../Components/VerifyOtp/VerifyOtp";
 import RegisterComplete from "../../Components/Registration/Registration";
 
 const Register = () => {
-  const [step, setStep] = useState("create"); // "create", "verify", or "complete"
+  const [step, setStep] = useState("create");
   const [email, setEmail] = useState("");
 
   const handleOtpSent = (userEmail) => {
