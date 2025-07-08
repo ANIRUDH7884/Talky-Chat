@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { motion , AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FiUser,
   FiPhone,
@@ -11,6 +11,7 @@ import {
   FiEyeOff,
   FiCheck,
 } from "react-icons/fi";
+import { useToast } from "../../Contexts/Toaster/Toaster"; // ✅ Toast context
 import "./Registration.scss";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -19,6 +20,7 @@ const authURL = import.meta.env.VITE_API_AUTH_URL;
 const Registration = ({ email: emailProp }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { showSuccess, showError } = useToast(); // ✅ Use toast hooks
 
   const [formData, setFormData] = useState({
     username: "",
@@ -118,12 +120,15 @@ const Registration = ({ email: emailProp }) => {
       });
       const data = await response.json();
       if (data.status === "register-success") {
+        showSuccess("Registration successful! Please sign in.");
         setIsSubmitted(true);
         navigate("/login", { state: { user: data.user } });
       } else {
+        showError(data.message || "Registration failed");
         setErrors({ api: data.message || "Registration failed" });
       }
     } catch (err) {
+      showError("Network error. Please try again.");
       setErrors({ api: "Network error. Please try again." });
     } finally {
       setIsLoading(false);
@@ -275,7 +280,9 @@ const Registration = ({ email: emailProp }) => {
                           {field.extra}
                         </div>
                         {errors[field.name] && (
-                          <div className="error-text">{errors[field.name]}</div>
+                          <div className="error-text">
+                            {errors[field.name]}
+                          </div>
                         )}
                       </div>
                     ))}

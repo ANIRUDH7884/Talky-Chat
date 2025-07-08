@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { FiMail, FiArrowRight, FiCheck } from "react-icons/fi";
 import { Modal, Button } from "react-bootstrap";
+import { useToast } from "../../Contexts/Toaster/Toaster";
 import "./CreateOtp.scss";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -12,6 +13,8 @@ function CreateOtp({ onOtpSent }) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const { showSuccess, showError } = useToast();
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -31,13 +34,16 @@ function CreateOtp({ onOtpSent }) {
 
       if (response.data.status === "otp-sent") {
         setShowSuccessModal(true);
+        showSuccess("OTP sent to your email.");
       } else {
-        setError(response.data.message || "Failed to send OTP");
+        const msg = response.data.message || "Failed to send OTP";
+        setError(msg);
+        showError(msg);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "An error occurred. Please try again."
-      );
+      const msg = err.response?.data?.message || "An error occurred. Please try again.";
+      setError(msg);
+      showError(msg);
     } finally {
       setIsLoading(false);
     }

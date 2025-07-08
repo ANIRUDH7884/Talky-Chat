@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
-import { useNavigate } from "react-router-dom"; // Add this import
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../../Contexts/Toaster/Toaster"; // ✅ toast context
 import "./Login.scss";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -14,8 +15,8 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
+  const { showError, showSuccess } = useToast(); // ✅ use toaster
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +25,6 @@ const Login = () => {
       [name]: value,
     }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
-    if (apiError) setApiError("");
   };
 
   const handleSubmit = async (e) => {
@@ -38,7 +38,6 @@ const Login = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-      setApiError("");
 
       try {
         const response = await fetch(`${baseURL}${authURL}login`, {
@@ -53,11 +52,11 @@ const Login = () => {
 
         if (!response.ok) {
           if (data.status === "user-not-found") {
-            setApiError("User not found with this email/phone");
+            showError("User not found with this email/phone");
           } else if (data.status === "invalid-credentials") {
-            setApiError("Incorrect password");
+            showError("Incorrect password");
           } else {
-            setApiError(data.message || "Login failed");
+            showError(data.message || "Login failed");
           }
           return;
         }
@@ -67,10 +66,11 @@ const Login = () => {
         localStorage.setItem("refreshToken", data.refreshToken);
         localStorage.setItem("user", JSON.stringify(data.user));
 
+        showSuccess("Logged in successfully!");
         navigate("/Dashboard");
       } catch (error) {
         console.error("Login error:", error);
-        setApiError("Network error. Please try again.");
+        showError("Network error. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -93,8 +93,6 @@ const Login = () => {
           <h1>Welcome Back</h1>
           <p>Sign in to continue your conversations</p>
         </div>
-
-        {apiError && <div className="api-error">{apiError}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className={`input-group ${errors.identifier ? "error" : ""}`}>
@@ -153,7 +151,10 @@ const Login = () => {
         </form>
 
         <div className="signup-link">
-          Don't have an account? <button type="button">Create one</button>
+          Don't have an account?{" "}
+          <button type="button" onClick={() => navigate("/register")}>
+            Create one
+          </button>
         </div>
       </div>
     </div>
