@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
+import { useToast } from "../../Contexts/Toaster/Toaster";
 import "./VerifyOtp.scss";
 
 function VerifyOtp({ email, onVerified }) {
@@ -11,8 +12,10 @@ function VerifyOtp({ email, onVerified }) {
   const [isVerified, setIsVerified] = useState(false);
   const inputRefs = useRef([]);
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
-const authURL = import.meta.env.VITE_API_AUTH_URL;
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+  const authURL = import.meta.env.VITE_API_AUTH_URL;
+
+  const { showSuccess, showError } = useToast();
 
   const handleOtpChange = (value, index) => {
     if (isNaN(value)) return;
@@ -40,6 +43,7 @@ const authURL = import.meta.env.VITE_API_AUTH_URL;
     const otpCode = otp.join("");
     if (otpCode.length !== 4) {
       setError("Please enter a valid 4-digit code");
+      showError("Invalid OTP. It must be 4 digits.");
       setIsLoading(false);
       return;
     }
@@ -52,12 +56,17 @@ const authURL = import.meta.env.VITE_API_AUTH_URL;
 
       if (response.data.status === "otp-verified") {
         setIsVerified(true);
+        showSuccess("OTP verified successfully!");
         onVerified();
       } else {
-        setError(response.data.message || "OTP verification failed");
+        const msg = response.data.message || "OTP verification failed";
+        setError(msg);
+        showError(msg);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Please try again.");
+      const msg = err.response?.data?.message || "Something went wrong. Please try again.";
+      setError(msg);
+      showError(msg);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +86,9 @@ const authURL = import.meta.env.VITE_API_AUTH_URL;
         </div>
 
         <h2>Verify Your Account</h2>
-        <p className="subtext">Enter the 4-digit code sent to <strong>{email}</strong></p>
+        <p className="subtext">
+          Enter the 4-digit code sent to <strong>{email}</strong>
+        </p>
 
         <form onSubmit={handleVerify}>
           <div className="otp-container">
@@ -119,7 +130,7 @@ const authURL = import.meta.env.VITE_API_AUTH_URL;
 
         <div className="footer-links">
           <span>Didn't receive code?</span>
-          <button onClick={() => alert("Resend logic coming soon")}>
+          <button onClick={() => showInfo("Resend logic coming soon!")}>
             Resend Code
           </button>
         </div>
