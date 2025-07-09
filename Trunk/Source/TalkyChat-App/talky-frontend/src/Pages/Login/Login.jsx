@@ -1,29 +1,25 @@
 import { useState } from "react";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../../Contexts/Toaster/Toaster"; // ✅ toast context
+import { useToast } from "../../Contexts/Toaster/Toaster";
+import { useAuth } from "../../Contexts/Auth/AuthContext";
 import "./Login.scss";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 const authURL = import.meta.env.VITE_API_AUTH_URL;
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    identifier: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ identifier: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { showError, showSuccess } = useToast(); // ✅ use toaster
+  const { showError, showSuccess } = useToast();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -31,45 +27,32 @@ const Login = () => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.identifier.trim())
-      newErrors.identifier = "Email or phone is required";
+    if (!formData.identifier.trim()) newErrors.identifier = "Email or phone is required";
     if (!formData.password) newErrors.password = "Password is required";
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-
       try {
         const response = await fetch(`${baseURL}${authURL}login`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-          if (data.status === "user-not-found") {
-            showError("User not found with this email/phone");
-          } else if (data.status === "invalid-credentials") {
-            showError("Incorrect password");
-          } else {
-            showError(data.message || "Login failed");
-          }
+          if (data.status === "user-not-found") showError("User not found with this email/phone");
+          else if (data.status === "invalid-credentials") showError("Incorrect password");
+          else showError(data.message || "Login failed");
           return;
         }
 
-        // Login successful
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
+        login(data.user, data.accessToken);
         showSuccess("Logged in successfully!");
-        navigate("/Dashboard");
+        navigate("/dashboard");
       } catch (error) {
-        console.error("Login error:", error);
         showError("Network error. Please try again.");
       } finally {
         setIsLoading(false);
@@ -107,9 +90,7 @@ const Login = () => {
               placeholder="Your email or phone number"
               autoFocus
             />
-            {errors.identifier && (
-              <span className="error-text">{errors.identifier}</span>
-            )}
+            {errors.identifier && <span className="error-text">{errors.identifier}</span>}
           </div>
 
           <div className={`input-group ${errors.password ? "error" : ""}`}>
@@ -130,9 +111,7 @@ const Login = () => {
             >
               {showPassword ? "Hide" : "Show"}
             </button>
-            {errors.password && (
-              <span className="error-text">{errors.password}</span>
-            )}
+            {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
 
           <div className="forgot-password">
