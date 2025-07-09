@@ -27,7 +27,8 @@ const Login = () => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.identifier.trim()) newErrors.identifier = "Email or phone is required";
+    if (!formData.identifier.trim())
+      newErrors.identifier = "Email or phone is required";
     if (!formData.password) newErrors.password = "Password is required";
 
     setErrors(newErrors);
@@ -43,8 +44,10 @@ const Login = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          if (data.status === "user-not-found") showError("User not found with this email/phone");
-          else if (data.status === "invalid-credentials") showError("Incorrect password");
+          if (data.status === "user-not-found")
+            showError("User not found with this email/phone");
+          else if (data.status === "invalid-credentials")
+            showError("Incorrect password");
           else showError(data.message || "Login failed");
           return;
         }
@@ -90,7 +93,9 @@ const Login = () => {
               placeholder="Your email or phone number"
               autoFocus
             />
-            {errors.identifier && <span className="error-text">{errors.identifier}</span>}
+            {errors.identifier && (
+              <span className="error-text">{errors.identifier}</span>
+            )}
           </div>
 
           <div className={`input-group ${errors.password ? "error" : ""}`}>
@@ -111,11 +116,15 @@ const Login = () => {
             >
               {showPassword ? "Hide" : "Show"}
             </button>
-            {errors.password && <span className="error-text">{errors.password}</span>}
+            {errors.password && (
+              <span className="error-text">{errors.password}</span>
+            )}
           </div>
 
           <div className="forgot-password">
-            <button type="button">Forgot password?</button>
+            <button type="button" onClick={() => navigate("/forgot-password")}>
+              Forgot password?
+            </button>
           </div>
 
           <button type="submit" className="login-button" disabled={isLoading}>
