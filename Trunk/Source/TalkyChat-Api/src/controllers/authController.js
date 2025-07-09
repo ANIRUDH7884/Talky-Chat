@@ -2,6 +2,7 @@ const Otp = require("../models/otpModel");
 const User = require("../models/userModel");
 const logger = require("../libs/logger");
 const getWelcomeEmailTemplate = require("../utils/successRegister");
+const getForgotPasswordTemplate = require("../utils/forgotPasswordTemplate");
 const getOtpEmailTemplate = require("../utils/otpTemplate");
 const { hashPassword } = require("../libs/hasher");
 const { sendEmail } = require("../services/Mailer");
@@ -371,6 +372,48 @@ const changePassword = async (req, res) => {
   }
 };
 
+// Forgot Password Endpoint
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      status: "email-required",
+      message: "Email is required to reset password",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "No account found with this email",
+      });
+    }
+
+    await Otp.deleteMany({ email });
+
+    const otpCode = generateOtp();
+    await Otp.create({ email, otpCode, status: "new" });
+
+    const htmlTemplate = getForgotPasswordTemplate(otpCode, user.username);
+    await sendEmail(email, "OTP for Password Reset - Talky Chat", htmlTemplate);
+
+    return res.status(200).json({
+      status: "otp-sent",
+      message: "OTP sent to your email for password reset",
+    });
+  } catch (error) {
+    logger.error("Forgot Password Error:", error.message);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while requesting password reset",
+    });
+  }
+};
+
 //refresh Token End Point
 const refreshAccessToken = (req, res) => {
   const { refreshToken } = req.body;
@@ -499,4 +542,5 @@ module.exports = {
   getMyProfile,
   logout,
   deleteAccount,
+  forgotPassword
 };
