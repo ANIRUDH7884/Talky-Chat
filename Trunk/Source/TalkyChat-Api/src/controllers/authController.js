@@ -414,6 +414,82 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+//Verify ResetPassword Endpoint
+const verifyResetOtp = async (req, res) => {
+  const { email, otpCode } = req.body;
+
+  if (!email || !otpCode) {
+    return res.status(400).json({
+      status: "missing-fields",
+      message: "Email and OTP are required",
+    });
+  }
+
+  try {
+    const otpRecord = await Otp.findOne({ email, status: "new" });
+
+    if (!otpRecord) {
+      return res.status(404).json({
+        status: "otp-not-found",
+        message: "OTP not found or already used",
+      });
+    }
+
+    if (otpRecord.otpCode !== Number(otpCode)) {
+      return res.status(400).json({
+        status: "invalid-otp",
+        message: "Incorrect OTP entered",
+      });
+    }
+
+    otpRecord.status = "verified";
+    await otpRecord.save();
+
+    return res.status(200).json({
+      status: "otp-verified",
+      message: "OTP verified successfully for password reset",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while verifying reset OTP",
+    });
+  }
+};
+
+//Resend Otp Endpoint
+const resendResetOtp = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      status: "email-required",
+      message: "Email is required to resend OTP",
+    });
+  }
+
+  try {
+    const otpCode = Math.floor(1000 + Math.random() * 9000);
+
+    await Otp.deleteMany({ email });
+
+    await Otp.create({ email, otpCode, status: "new" });
+
+    const htmlTemplate = getOtpEmailTemplate(otpCode, "User");
+    await sendEmail(email, "Your Reset OTP for Talky Chat", htmlTemplate);
+
+    return res.status(200).json({
+      status: "otp-resent",
+      message: "A new OTP has been sent to your email",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while resending OTP",
+    });
+  }
+};
+
 //refresh Token End Point
 const refreshAccessToken = (req, res) => {
   const { refreshToken } = req.body;
@@ -542,5 +618,7 @@ module.exports = {
   getMyProfile,
   logout,
   deleteAccount,
-  forgotPassword
+  forgotPassword,
+  verifyResetOtp,
+  resendResetOtp
 };

@@ -6,6 +6,7 @@ import Dashboard from "../Pages/Dashboard/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import ForgotPassword from "../Pages/ForgotPassword/ForgotPassword";
 import VerifyResetOtp from "../Components/VerifyResetOtp/VerifyResetOtp"
+import ResetPassword from "../Pages/ResetPassword/ResetPassword";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/verifyReset-Otp" element={<VerifyResetOtp />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route
         path="/dashboard"
         element={

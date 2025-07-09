@@ -4,13 +4,15 @@ const verifyToken = require('../middleware/VerifyToken');
 const upload = require('../utils/multer');
 const uploadErrorHandler = require('../middleware/uploadErrorHandler')
 
-const{ CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, getMyProfile, logout, deleteAccount, forgotPassword} = require('../controllers/authController')
+const{ CreateOtp, VerifyOtp, registerUser, loginUser, updateProfile, changePassword, getMyProfile, logout, deleteAccount, forgotPassword, verifyResetOtp, resendResetOtp } = require('../controllers/authController')
 
 //End-Points 
 router.post('/Create-Otp' ,CreateOtp );
 router.post('/Verify-Otp' ,VerifyOtp );
 router.post('/Register' ,registerUser );
 router.post('/forgot-password' ,forgotPassword);
+router.post('/verifyReset-Otp' ,verifyResetOtp);
+router.post('/resend-Otp' ,resendResetOtp);
 router.post('/Login' ,loginUser );
 router.put('/Profile' ,verifyToken,upload.single('profilePic'),uploadErrorHandler, updateProfile);
 router.put('/Change-password' ,verifyToken, changePassword);
