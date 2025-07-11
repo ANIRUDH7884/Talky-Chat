@@ -23,9 +23,11 @@ const VerifyResetOtp = () => {
   }, [email, navigate]);
 
   useEffect(() => {
-    const timer = countdown > 0 && setInterval(() => {
-      setCountdown(countdown - 1);
-    }, 1000);
+    const timer =
+      countdown > 0 &&
+      setInterval(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
     return () => clearInterval(timer);
   }, [countdown]);
 
@@ -79,7 +81,7 @@ const VerifyResetOtp = () => {
       const response = await fetch(`${baseURL}${authURL}verifyReset-Otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otpCode: otpCode, type: "reset" }),
+        body: JSON.stringify({ email, otpCode }),
       });
 
       const data = await response.json();
@@ -90,7 +92,9 @@ const VerifyResetOtp = () => {
       }
 
       showSuccess("OTP verified successfully!");
-      navigate(`/reset-password?email=${encodeURIComponent(email)}&token=${data.token}`);
+      navigate(
+        `/reset-password?email=${encodeURIComponent(email)}&token=${data.token}`
+      );
     } catch (err) {
       showError("Network error. Please try again.");
     } finally {
@@ -112,7 +116,9 @@ const VerifyResetOtp = () => {
             <span className="logo-text">TalkyChat</span>
           </div>
           <h1>Reset Password Verification</h1>
-          <p>Enter the 4-digit OTP sent to <strong>{email}</strong></p>
+          <p>
+            Enter the 4-digit OTP sent to <strong>{email}</strong>
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="otp-form">
@@ -151,11 +157,7 @@ const VerifyResetOtp = () => {
             <p>Resend OTP in {countdown}s</p>
           ) : (
             <button onClick={handleResendOtp} disabled={isLoading}>
-              {isLoading ? (
-                <FiRefreshCw className="spin-icon" />
-              ) : (
-                "Resend OTP"
-              )}
+              {isLoading ? <FiRefreshCw className="spin-icon" /> : "Resend OTP"}
             </button>
           )}
         </div>
