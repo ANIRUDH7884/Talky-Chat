@@ -16,6 +16,8 @@ const { comparePasswords } = require("../libs/hasher");
 const {
   generateToken,
   generateRefreshToken,
+  generateResetToken,
+  verifyResetToken
 } = require("../services/jwtService");
 
 const generateOtp = () => Math.floor(1000 + Math.random() * 9000);
@@ -414,7 +416,68 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-//Verify ResetPassword Endpoint
+//Reset Password Endpoint
+const resetPassword = async (req, res) => {
+  const { token, email, newPassword, confirmPassword } = req.body; 
+
+  if (!token || !email) {
+    return res.status(400).json({
+      status: "missing-token-or-email",
+      message: "Reset token and email are required",
+    });
+  }
+
+  if (!newPassword || !confirmPassword) {
+    return res.status(400).json({
+      status: "missing-fields",
+      message: "Both new password and confirm password are required",
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({
+      status: "password-mismatch",
+      message: "Passwords do not match",
+    });
+  }
+
+  try {
+    const decoded = verifyResetToken(token);
+
+    if (!decoded || !decoded.id || decoded.email !== email) {
+      return res.status(401).json({
+        status: "invalid-token",
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User not found",
+      });
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({
+      status: "password-reset",
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    logger.error("Reset password error:", error.message);
+    return res.status(500).json({
+      status: "server-error",
+      message: "Something went wrong while resetting password",
+    });
+  }
+};
+
+//Verify ResetOtp Endpoint
 const verifyResetOtp = async (req, res) => {
   const { email, otpCode } = req.body;
 
@@ -442,12 +505,27 @@ const verifyResetOtp = async (req, res) => {
       });
     }
 
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "user-not-found",
+        message: "User does not exist",
+      });
+    }
+
     otpRecord.status = "verified";
     await otpRecord.save();
+
+    const resetToken = generateResetToken({
+      id: user._id,
+      email: user.email,
+    });
 
     return res.status(200).json({
       status: "otp-verified",
       message: "OTP verified successfully for password reset",
+      token: resetToken,
     });
   } catch (error) {
     return res.status(500).json({
@@ -620,5 +698,6 @@ module.exports = {
   deleteAccount,
   forgotPassword,
   verifyResetOtp,
-  resendResetOtp
+  resendResetOtp,
+  resetPassword,
 };
