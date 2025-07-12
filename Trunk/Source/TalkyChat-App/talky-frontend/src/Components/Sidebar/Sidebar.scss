@@ -1,0 +1,33 @@
+@use '../../assets/Styles/main.scss' as *;
+
+.sidebar {
+  width: 70px;
+  height: 100vh;
+  background: $dark-navy;
+  position: fixed;
+  border-right: 1px solid rgba($accent-blue, 0.1);
+}
+
+.sidebar-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5rem;
+  gap: 2rem;
+}
+
+.sidebar-icon {
+  background: transparent;
+  border: none;
+  color: $text-light;
+  cursor: pointer;
+  padding: 0.5rem;
+  
+  &.active, &:hover {
+    color: $accent-blue;
+  }
+}
+.sidebar-item.active {
+  background-color: rgba($accent-blue, 0.1);
+  border-left: 3px solid $accent-blue;
+}

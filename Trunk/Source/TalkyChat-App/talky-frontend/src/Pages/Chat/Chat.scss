@@ -1,0 +1,26 @@
+.chat-coming-soon {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #1f2937;
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #6b7280;
+  }
+
+  body.dark & {
+    color: #f9fafb;
+
+    p {
+      color: #9ca3af;
+    }
+  }
+}

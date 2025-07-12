@@ -1,5 +1,57 @@
+// ======= THEME COLORS =======
+
+// Dark Navy Theme
+$dark-navy: #000d1b;
+$dark-navy-light: #112240;
+$accent-blue: #64ffda;
+$text-light: #ccd6f6;
+
+// Light Mode
+$light-bg: #f8f9fa;
+$text-dark: #495057;
+
+// ======= GLOBAL STYLES =======
 body {
-  background-color: #000d1b;
+  background-color: $dark-navy;
   font-family: 'Segoe UI', sans-serif;
-  color: aliceblue;
+  color: $text-light;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+// ======= MAIN CONTENT SCROLL AREA =======
+main {
+  padding-top: 60px; // navbar height
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  // WebKit Scrollbar (Chrome, Edge, Safari)
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($accent-blue, 0.3); // soft blue
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background-color 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba($accent-blue, 0.6);
+  }
+}
+
+// Firefox Scrollbar
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba($text-dark, 0.4) transparent;
 }

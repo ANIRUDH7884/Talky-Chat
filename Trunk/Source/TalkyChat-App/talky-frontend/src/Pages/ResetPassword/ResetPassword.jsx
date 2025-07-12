@@ -60,7 +60,7 @@ const ResetPassword = () => {
 
       if (response.data?.status === "password-reset") {
         showSuccess("Password reset successfully!");
-        navigate("/dashboard");
+        navigate("/chats");
       } else {
         showError(response.data?.message || "Failed to reset password");
       }
