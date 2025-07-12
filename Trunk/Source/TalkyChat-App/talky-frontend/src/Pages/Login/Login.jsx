@@ -54,7 +54,7 @@ const Login = () => {
 
         login(data.user, data.accessToken);
         showSuccess("Logged in successfully!");
-        navigate("/dashboard");
+        navigate("/chats");
       } catch (error) {
         showError("Network error. Please try again.");
       } finally {

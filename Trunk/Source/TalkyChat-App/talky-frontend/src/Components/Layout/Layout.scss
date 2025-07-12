@@ -1,0 +1,25 @@
+@use '../../assets/Styles/main.scss' as *;
+@use 'sass:color';
+.app-layout {
+  min-height: 100vh;
+  
+  &.dark {
+    background: color.adjust($dark-navy, $lightness: -5%);
+    color: $text-light;
+  }
+  
+  &:not(.dark) {
+    background: $light-bg;
+    color: $text-dark;
+  }
+}
+
+.content {
+  margin-left: 70px; // Match sidebar width
+  min-height: 100vh;
+}
+
+main {
+  padding: 2rem;
+}
+

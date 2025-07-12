@@ -1,0 +1,80 @@
+@use '../../assets/Styles/main.scss' as *;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0; // If your sidebar width is 70px
+  right: 0;
+  height: 60px;
+  background: $dark-navy;
+  z-index: 1000;
+}
+
+.navbar-date {
+  margin-left: 3rem;
+  font-size: 0.9rem;
+}
+
+.navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.avatar-circle {
+  background: $dark-navy-light;
+  color: $text-light;
+  border-radius: 50%;
+  padding: 0.3rem 0.7rem;
+  font-weight: bold;
+}
+
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: $text-light;
+  cursor: pointer;
+  padding: 0.5rem;
+  
+  &:hover {
+    color: $accent-blue;
+  }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  
+  span {
+    font-size: 0.9rem;
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: $dark-navy-light;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0;
+  min-width: 150px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  
+  a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: $text-light;
+    text-decoration: none;
+    
+    &:hover {
+      background: rgba($accent-blue, 0.1);
+    }
+    
+    &.logout {
+      color: #ff6b6b;
+    }
+  }
+}
