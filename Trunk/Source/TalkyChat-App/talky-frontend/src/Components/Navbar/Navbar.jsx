@@ -9,6 +9,7 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import Profile from "../../Components/Profile/Profile.jsx";
+import ChangePassword from "../../Components/ChangePassword/ChangePassword.jsx";
 import "./Navbar.scss";
 import apiClient from "../../Config/ApiClient/ApiClient";
 
@@ -18,6 +19,7 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
   const [currentDate, setCurrentDate] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [userData, setUserData] = useState({
     username: "User",
     profilePic: null,
@@ -46,6 +48,19 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
       fetchUserDetails(); // Refresh user data
     } catch (error) {
       console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleChangePassword = async ({ currentPassword, newPassword }) => {
+    try {
+      await apiClient.put(`${authURL}Change-password`, {
+        currentPassword,
+        newPassword,
+      });
+    } catch (error) {
+      throw new Error(
+        error?.response?.data?.message || "Failed to change password"
+      );
     }
   };
 
@@ -99,9 +114,8 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
               ) : (
                 userData.username?.charAt(0).toUpperCase()
               )}
-              
             </div>
-               <div className={`status-dot ${userData.status || "offline"}`} />
+            <div className={`status-dot ${userData.status || "offline"}`} />
             <span>{userData.username}</span>
             <FiChevronDown
               size={16}
@@ -123,10 +137,16 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
                   <FiSettings size={16} className="dropdown-icon" />
                   <span>Settings</span>
                 </a>
-                <a href="/change-password">
+                <a
+                  onClick={() => {
+                    setShowChangePasswordModal(true);
+                    setShowDropdown(false);
+                  }}
+                >
                   <FiKey size={16} className="dropdown-icon" />
                   <span>Change Password</span>
                 </a>
+
                 <div className="dropdown-divider"></div>
                 <a className="logout" onClick={handleLogout}>
                   <FiLogOut size={16} className="dropdown-icon" />
@@ -143,9 +163,17 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
           user={userData}
           onClose={() => setShowProfileModal(false)}
           onSave={handleSaveProfile}
-          setUserData={setUserData} 
+          setUserData={setUserData}
         />
       )}
+
+      {showChangePasswordModal && (
+        <ChangePassword
+          onClose={() => setShowChangePasswordModal(false)}
+          onChangePassword={handleChangePassword}
+        />
+      )}
+
     </>
   );
 };
