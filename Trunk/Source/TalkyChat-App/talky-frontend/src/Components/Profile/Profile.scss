@@ -1,0 +1,387 @@
+@use '../../assets/Styles/main.scss' as *;
+@use 'sass:color';
+
+// Animation Variables
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+$ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+$ease-in-out: cubic-bezier(0.83, 0, 0.17, 1);
+
+// Profile Modal Overlay
+.profile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.159);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(12px) brightness(0.8);
+  animation: fadeIn 0.4s $ease-out;
+  will-change: opacity;
+}
+
+// Profile Modal Container
+.profile-modal {
+  background: $dark-navy;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  padding: 2.25rem;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: slideUp 0.4s $ease-out;
+  will-change: transform;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba($accent-blue, 0.3), transparent);
+  }
+}
+
+// Close Button
+.close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba($text-light, 0.8);
+  cursor: pointer;
+  transition: all 0.3s $ease-out;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: $text-light;
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  &:active {
+    transform: rotate(90deg) scale(0.95);
+  }
+}
+
+// Profile Header
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+  position: relative;
+  padding-bottom: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  h2 {
+    color: $text-light;
+    font-size: 1.625rem;
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .edit-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba($accent-blue, 0.12);
+    color: $accent-blue;
+    border: none;
+    padding: 0.625rem 1.125rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s $ease-out;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    backdrop-filter: blur(4px);
+    margin-right: 31px;
+
+    &:hover {
+      background: rgba($accent-blue, 0.2);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Avatar Section
+.avatar-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba($accent-blue, 0.15) 0%, transparent 70%);
+    z-index: 0;
+  }
+}
+
+.avatar-container {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  z-index: 1;
+
+  .profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba($accent-blue, 0.3);
+    box-shadow: 
+      0 10px 25px -5px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s $ease-out;
+    position: relative;
+    z-index: 2;
+  }
+
+  .avatar-upload-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: $accent-blue;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s $ease-out;
+    z-index: 3;
+    box-shadow: 
+      0 4px 12px rgba($accent-blue, 0.25),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      transform: scale(1.1) translateY(-2px);
+      box-shadow: 
+        0 6px 16px rgba($accent-blue, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// Form Elements
+.form-group {
+  margin-bottom: 1.625rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: rgba($text-light, 0.75);
+    margin-bottom: 0.6875rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: $text-light;
+    font-size: 1rem;
+    transition: all 0.3s $ease-out;
+    backdrop-filter: blur(4px);
+
+    &:focus {
+      outline: none;
+      border-color: rgba($accent-blue, 0.5);
+      box-shadow: 
+        0 0 0 3px rgba($accent-blue, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    &::placeholder {
+      color: rgba($text-light, 0.4);
+    }
+  }
+
+  .display-value {
+    padding: 0.875rem 1.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    color: $text-light;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 1rem;
+    backdrop-filter: blur(4px);
+  }
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  button {
+    padding: 0.875rem 1.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s $ease-out;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+  }
+
+  .cancel-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba($text-light, 0.8);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: $text-light;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .save-btn {
+    background: $accent-blue;
+    border: none;
+    color: white;
+    box-shadow: 
+      0 4px 12px rgba($accent-blue, 0.25),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    &:hover:not(:disabled) {
+      background: color.scale($accent-blue, $lightness: -7%);
+      transform: translateY(-1px);
+      box-shadow: 
+        0 6px 16px rgba($accent-blue, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    &.success {
+      background: #003d73;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+
+      &:hover {
+        background: color.scale(#1377f9, $lightness: -7%);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(20px) scale(0.98);
+    opacity: 0.8;
+  }
+  to { 
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 480px) {
+  .profile-modal {
+    max-width: calc(100% - 2rem);
+    padding: 1.75rem;
+    border-radius: 16px;
+  }
+
+  .profile-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .avatar-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .form-group input, 
+  .form-group .display-value {
+    padding: 0.75rem 1rem;
+  }
+
+  .form-actions button {
+    padding: 0.75rem 1.5rem;
+  }
+}
