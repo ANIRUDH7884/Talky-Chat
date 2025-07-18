@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import Profile from "../../Components/Profile/Profile.jsx";
 import ChangePassword from "../../Components/ChangePassword/ChangePassword.jsx";
+import ConfirmationModal from "../ConfirmationBox/ConfirmationBox.jsx";
 import "./Navbar.scss";
 import apiClient from "../../Config/ApiClient/ApiClient";
 
@@ -20,6 +21,7 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [userData, setUserData] = useState({
     username: "User",
     profilePic: null,
@@ -61,6 +63,17 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
       throw new Error(
         error?.response?.data?.message || "Failed to change password"
       );
+    }
+  };
+
+  const performLogout = async () => {
+    try {
+      await apiClient.post(`${authURL}Logout`);
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    } finally {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
   };
 
@@ -148,7 +161,13 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
                 </a>
 
                 <div className="dropdown-divider"></div>
-                <a className="logout" onClick={handleLogout}>
+                <a
+                  className="logout"
+                  onClick={() => {
+                    setShowLogoutModal(true);
+                    setShowDropdown(false);
+                  }}
+                >
                   <FiLogOut size={16} className="dropdown-icon" />
                   <span>Logout</span>
                 </a>
@@ -174,6 +193,18 @@ const Navbar = ({ toggleTheme, isDarkMode }) => {
         />
       )}
 
+      {showLogoutModal && (
+        <ConfirmationModal
+          isOpen={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+          onConfirm={performLogout}
+          title="Logout Confirmation"
+          message="Are you sure you want to logout?"
+          confirmText="Logout"
+          cancelText="Cancel"
+          type="danger"
+        />
+      )}
     </>
   );
 };
