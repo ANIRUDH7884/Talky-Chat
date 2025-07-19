@@ -1,26 +1,37 @@
-.chat-coming-soon {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  justify-content: center;
+@use "../../assets/Styles/main.scss" as *;
+@use "sass:color";
+* {
+}
+.chat-fallback {
+  position: absolute;
+  left: 757px;
   align-items: center;
-  text-align: center;
-  color: #1f2937;
+  top: 350px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+  .logo-icon {
+    width: 47px;
+    height: 47px;
+    background: $dark-navy-light;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-left: 128px;
   }
 
-  p {
-    color: #6b7280;
-  }
-
-  body.dark & {
-    color: #f9fafb;
-
-    p {
-      color: #9ca3af;
-    }
+  .logo-text {
+    font-weight: 700;
+    font-size: 1.2rem;
+    background: white;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
