@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FiSearch, FiX } from "react-icons/fi";
+import { FiSearch, FiX, FiUserPlus } from "react-icons/fi";
 import apiClient from "../../Config/ApiClient/ApiClient";
 import "./ChatList.scss";
 
-const ChatUrl = import.meta.env.VITE_API_CHAT_URL
+const ChatUrl = import.meta.env.VITE_API_CHAT_URL;
 
 const ChatList = ({ setActiveChat }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,6 +64,12 @@ const ChatList = ({ setActiveChat }) => {
       <div className="sidebar-header">
         <div className="header-content">
           <h2>Chats</h2>
+          <button
+            className="new-chat-btn"
+            onClick={() => console.log("Open user list modal")}
+          >
+            <FiUserPlus />
+          </button>
         </div>
       </div>
 
@@ -88,7 +94,11 @@ const ChatList = ({ setActiveChat }) => {
         <div className="chat-list">
           {filteredChats.length === 0 ? (
             <div className="no-chats-fallback">
-              <p>💬 You don’t have any conversations yet.<br />Start chatting now!</p>
+              <p>
+                💬 You don’t have any conversations yet.
+                <br />
+                Start chatting now!
+              </p>
             </div>
           ) : (
             filteredChats.map((chat) => (
