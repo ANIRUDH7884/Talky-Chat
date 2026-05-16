@@ -2,19 +2,22 @@ const logger = require('../libs/logger');
 const User = require('../models/userModel');
 const mongoose = require("mongoose");
 
+//Get all Users 
 const getAllUsers = async (req, res) => {
   try {
     const search = req.query.search || "";
+    const currentUserId = req.auth.id;
 
     const query = {
-      username: { $regex: search, $options: "i" }
+      username: { $regex: search, $options: "i" },
+      _id: { $ne: currentUserId }
     };
 
     const users = await User.find(query)
       .select("-password -__v")
       .sort({ createdAt: -1 });
 
-    logger.info(`Search query: "${search}" | Users found: ${users.length}`);
+    logger.info(`Search: "${search}", excluding userId: ${currentUserId}, found: ${users.length}`);
 
     return res.status(200).json({
       status: "success",

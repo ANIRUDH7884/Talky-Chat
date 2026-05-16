@@ -6,9 +6,7 @@ const getForgotPasswordTemplate = require("../utils/forgotPasswordTemplate");
 const getOtpEmailTemplate = require("../utils/otpTemplate");
 const { hashPassword } = require("../libs/hasher");
 const { sendEmail } = require("../services/Mailer");
-const {
-  validateEmail,
-  validatePassword,
+const { validateEmail,  validatePassword,
   validatePhoneNumber,
   validateUsername,
 } = require("../libs/validator");
