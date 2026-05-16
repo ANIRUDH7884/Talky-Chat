@@ -10,7 +10,7 @@ import ResetPassword from "../Pages/ResetPassword/ResetPassword";
 import Layout from "../Components/Layout/Layout";
 
 
-const AppRoutes = () => {
+const  AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
